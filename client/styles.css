@@ -14,7 +14,7 @@ h1{
     background-color: #00FFF2;
     float: right;
     margin-right: 385px;
-    margin-top: 110px;
+    margin-top: 50px;
     width: 100px;
     height: 50px;
     font-size: 30px; 
@@ -23,12 +23,14 @@ h1{
 #chirptext{
     width: 700px;
     height: 150px;
+    font-size: 25px;
 }
 
 #chirp-container{
     border: 2.5px solid black;
     width: 700px;
     height: 700px;
-    background-color: #4ED187; 
+    background-color: #5CA7A0; 
+    font-size: 25px;
 }
 

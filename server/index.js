@@ -15,10 +15,10 @@ let server = http.createServer((req, res) => {
             let rs = fs.createReadStream(path.join(clientDir, "index.html"));
             return rs.pipe(res);
         }
-        else if(parsedUrl.pathname === '/api/chrips'){
+        else if(parsedUrl.pathname === '/api/chirps'){
             if(req.method === "GET"){
                 let rs = fs.createReadStream(path.join(serverDir, "data.json"));
-                res.write(200, {"Content-Type": "application/json"});                
+                res.writeHead(200, {"Content-Type": "application/json"});                
                 return rs.pipe(res);
             }
             else if(req.method === "POST"){
@@ -50,15 +50,15 @@ let server = http.createServer((req, res) => {
         }else{
             let pathInfo = path.parse(urlInfo.pathname);
             if(pathInfo.base === "styles.css"){
-                let rs = fs.createReadStream(clientDir, "styles.css");
+                let rs = fs.createReadStream(path.join(clientDir, "styles.css"));
                 res.writeHead(200,  {"Content-Type": "text/css"});
                 return rs.pipe(res);
             }else if(pathInfo.base === "scripts.js"){
-                let rs = fs.createReadStream(clientDir, "scripts.js");
+                let rs = fs.createReadStream(path.join(clientDir, "scripts.js"));
                 res.writeHead(200, {"Content-Type": "text/javascript"});
                 return rs.pipe(res);
             }else if(pathInfo.base === "index.html"){
-                let rs = fs.createReadStream(clientDir, "index.html");
+                let rs = fs.createReadStream(path.join(clientDir, "index.html"));
                 res.writeHead(200, {"Content-Type": "text/html"});
                 return rs.pipe(res);
             }else{

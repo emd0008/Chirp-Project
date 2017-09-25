@@ -48,7 +48,7 @@ let server = http.createServer((req, res) => {
                 });
             }
         }else{
-            let pathInfo = path.parse(urlInfo.pathname);
+            let pathInfo = path.parse(parsedUrl.pathname);
             if(pathInfo.base === "styles.css"){
                 let rs = fs.createReadStream(path.join(clientDir, "styles.css"));
                 res.writeHead(200,  {"Content-Type": "text/css"});

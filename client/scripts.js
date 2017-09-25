@@ -1,23 +1,42 @@
-let Chirp = function(message, user, timestamp){
-    this.message = message;
-    this.user = user;
-    this.timestamp = timestamp;
+let $chirpcontainer = $("#chirp-container");
+let $chirptext = $("#chirptext");
+$("#chirp").click(postChirp);
+getChirps();
+
+function getChirps(){
+    $.ajax({
+        method: 'GET',
+        url: '/api/chirps'
+    }).then((chirps) => {
+        for(let i = 0; i < chirps.length; i++){
+            renderChirp(chirps[i]);        
+        }
+    }).catch((err) => {
+        console.error(err);
+    });
 }
 
-$(document).ready(function(){
-    $.get("http://localhost:3000/api/chirps");
-});
+function postChirp(){
+    let payload = {
+        message: $chirptext.val(),
+        user: 'Emily',
+        timestamp: new Date().toISOString()
+    };
 
-function buttonDisable(){
-    if(this.value.length > 0){
-        document.getElementById('chirp').disabled = false;
-    }else{
-        document.getElementById('chirp').disabled = true;
-    }
+    $.ajax({
+        method: "POST",
+        url: "/api/chirps",
+        contentType: "application.json",
+        data: JSON.stringify(payload)
+    }).then(() => {
+        renderChirp(payload);
+    }).catch((err) => {
+        console.error(err);
+    })
 }
 
-function isEmpty(){
-    if(document.getElementById('chirptext').value === ''){
-        alert("Enter something");
-    }
+function renderChirp(chirp){
+    let $chirpDiv = $('<div class="chirp"></div>');
+    $chirpDiv.append("<p>" + chirp.message + "</p>");
+    $chirpcontainer.append($chirpDiv);
 }

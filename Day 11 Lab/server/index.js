@@ -6,40 +6,65 @@ var path = require("path");
 let serverDir = path.join(__dirname, "../server");
 let clientDir = path.join(__dirname, "../client");
 
-let objArray = [];
-
-var server = http.createServer(function(req, res) {
-    let parsedUrl = url.parse(req.url);
+let server = http.createServer((req, res) => {
+    let parsedUrl =  url.parse(req.url, true);
     let parsedJSON = '/server/data.json';
     fs.readFile('index.html', function(err, data){
-        if(parsedUrl.pathname === '/'){
+        if(parsedUrl.pathname === '/' && req.method === 'GET'){
             res.writeHead(200, {"Content-Type": "text/html"});
             let rs = fs.createReadStream(path.join(clientDir, "index.html"));
-            rs.pipe(res);
+            return rs.pipe(res);
         }
         else if(parsedUrl.pathname === '/api/chrips'){
             if(req.method === "GET"){
                 let rs = fs.createReadStream(path.join(serverDir, "data.json"));
-                rs.pipe(res);
-                res.write(200, {"Content-Type": "text/json"});
-                return res.end();
+                res.write(200, {"Content-Type": "application/json"});                
+                return rs.pipe(res);
             }
             else if(req.method === "POST"){
-                let rs = fs.createReadStream(path.join(serverDir, "data.json"));
-                var obj = JSON.parse(text);
-                obj.push(objArray);
-                var jsonArray = JSON.stringify(objArray);
-                fs.writeFile('data.json', json, 'utf8', callback);
-                res.write(201, {"Content-Type": "text/json"});
-                return res.end();
+                let incomingData = '';
+                req.on('data', function(chuck){
+                    incomingData += chuck;
+                });
+                req.on('end', function(){
+                    let newChirp = JSON.parse(incomingData);
+                    fs.readFile(path.join(serverDir, 'data.json'), 'utf8', (err, data) => {
+                        if(err){
+                            console.log(err);
+                        }else{
+                            let chirpsArray = JSON.parse(data);
+                            chirpsArray.push(newChirp);
+
+                            fs.writeFile(path.join(serverDir, 'data.json'), JSON.stringify(chirpsArray), (err) => {
+                                if(err){
+                                    console.log(err);
+                                }else{
+                                    res.writeHead(201);
+                                    return res.end();
+                                }
+                            });
+                        }
+                    });
+                });
             }
-        }else if(parsedUrl.pathname === '/styles.css'){
-            res.writeHead(200, {"Content-Type": "text/css"});
-            let rs = fs.createReadStream(path.join(clientDir, "styles.css"));
-            rs.pipe(res);
-        }else if(err){
-            res.writeHead(404, {"Content-Type": "text/html"});
-            return res.end("404 Not Found");
+        }else{
+            let pathInfo = path.parse(urlInfo.pathname);
+            if(pathInfo.base === "styles.css"){
+                let rs = fs.createReadStream(clientDir, "styles.css");
+                res.writeHead(200,  {"Content-Type": "text/css"});
+                return rs.pipe(res);
+            }else if(pathInfo.base === "scripts.js"){
+                let rs = fs.createReadStream(clientDir, "scripts.js");
+                res.writeHead(200, {"Content-Type": "text/javascript"});
+                return rs.pipe(res);
+            }else if(pathInfo.base === "index.html"){
+                let rs = fs.createReadStream(clientDir, "index.html");
+                res.writeHead(200, {"Content-Type": "text/html"});
+                return rs.pipe(res);
+            }else{
+                res.writeHead(404, {"Content-Type": "text/plain"});
+                return res.end("404 Not Found");
+            }
         }
     });
 });

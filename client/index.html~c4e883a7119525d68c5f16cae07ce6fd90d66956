@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Lab 09 - Chirper</title>
+        <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <h1><img src="http://chirp.danplanet.com/download/site/chirp.png" /></h1>
+        <!--<h1 id="welcome">Welcome to Chirp!</h1>-->
+        <button id="chirp" onclick='isEmpty()'>Chirp!</button>
+        <input type="text" id="chirptext" onkeyup="noTypeing()">
+        <div id="chirp-container"></div>
+    </body>
+</html>
